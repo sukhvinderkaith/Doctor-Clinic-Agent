@@ -3,64 +3,182 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ClinicCare - Access Portal</title>
+  <title>ClinicCare AI - Next-Gen Clinic Automation & AI Triage</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    .hero-gradient { background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.15), transparent 50%), radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.1), transparent 50%); }
+  </style>
 </head>
-<body class="bg-slate-900 min-h-screen flex items-center justify-center p-4">
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col justify-between hero-gradient">
 
-  <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md">
-    <h2 class="text-2xl font-bold text-center text-slate-800 mb-1">ClinicCare Portal</h2>
-    <p class="text-xs text-center text-slate-500 mb-6">Doctor, Patient & Owner Access</p>
+  <nav class="border-b border-slate-800/80 bg-slate-900/50 backdrop-blur-md sticky top-0 z-40 px-6 py-4">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-gradient-to-tr from-blue-600 to-emerald-500 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/20">
+          <i class="fa-solid fa-stethos-cope"></i>
+        </div>
+        <div>
+          <span class="text-lg font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">ClinicCare AI</span>
+          <span class="block text-[10px] text-slate-400 -mt-1 font-medium">Founded by Sukhvinder</span>
+        </div>
+      </div>
 
-    <!-- Tab Selection -->
-    <div class="flex bg-slate-100 p-1 rounded-xl mb-6">
-      <button onclick="switchTab('login')" id="loginTab" class="flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow text-slate-800">Login</button>
-      <button onclick="switchTab('register')" id="registerTab" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-500">Register</button>
+      <div class="flex items-center gap-3">
+        <button onclick="openAuthModal('login')" class="text-xs font-semibold text-slate-300 hover:text-white px-4 py-2.5 rounded-xl transition">Sign In</button>
+        <button onclick="openAuthModal('register')" class="text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl transition shadow-lg shadow-blue-600/30">Get Started Free</button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="max-w-7xl mx-auto px-6 pt-16 pb-12 text-center space-y-6">
+    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium">
+      <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+      AI-Powered Clinical Management Suite
+    </div>
+    
+    <h1 class="text-4xl md:text-6xl font-black text-white tracking-tight max-w-4xl mx-auto leading-tight">
+      Automate Patient Queues, AI Symptom Triage & Practice Growth.
+    </h1>
+    
+    <p class="text-slate-400 text-base md:text-lg max-w-2xl mx-auto">
+      ClinicCare AI helps healthcare providers streamline patient intake, reduce wait times with smart queue isolation, and boost practice efficiency seamlessly.
+    </p>
+
+    <div class="flex flex-wrap justify-center gap-4 pt-4">
+      <button onclick="openAuthModal('register')" class="bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-500 hover:to-emerald-500 text-white font-bold text-sm px-8 py-4 rounded-2xl transition shadow-xl shadow-emerald-500/10 flex items-center gap-2">
+        <i class="fa-solid fa-[#00ff88] fa-user-doctor"></i> Register Your Clinic
+      </button>
+      <button onclick="openAuthModal('login')" class="bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 font-bold text-sm px-8 py-4 rounded-2xl transition">
+        Access Portal
+      </button>
+    </div>
+  </header>
+
+  <section class="max-w-7xl mx-auto px-6 py-12">
+    <div class="text-center mb-12">
+      <h2 class="text-2xl md:text-3xl font-extrabold text-white">Why Doctors Choose ClinicCare AI</h2>
+      <p class="text-xs text-slate-400 mt-2">Built specifically to address high patient volumes and clinic operational chaos.</p>
     </div>
 
-    <!-- Login Form -->
-    <div id="loginForm" class="space-y-4">
-      <input type="text" id="loginMobile" placeholder="Mobile Number" class="w-full p-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-      <input type="password" id="loginPass" placeholder="Password" class="w-full p-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-      <button onclick="handleLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-sm transition shadow-lg shadow-blue-500/30">Sign In</button>
-    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="glass-card p-6 rounded-3xl border border-slate-800">
+        <div class="w-12 h-12 bg-blue-500/10 border border-blue-500/20 rounded-2xl flex items-center justify-center text-blue-400 text-xl mb-4">
+          <i class="fa-solid fa-[#00aaff] fa-shield-virus"></i>
+        </div>
+        <h3 class="text-base font-bold text-white mb-2">Automated AI Symptom Triage</h3>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          AI evaluates patient condition urgency (Routine vs Moderate vs Urgent) before they step into the consultation room.
+        </p>
+      </div>
 
-    <!-- Register Form -->
-    <div id="registerForm" class="space-y-3 hidden">
-      <input type="text" id="regName" placeholder="Full Name" class="w-full p-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-      <input type="text" id="regMobile" placeholder="Mobile Number" class="w-full p-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-      <input type="password" id="regPass" placeholder="Password" class="w-full p-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-      
+      <div class="glass-card p-6 rounded-3xl border border-slate-800">
+        <div class="w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center text-emerald-400 text-xl mb-4">
+          <i class="fa-solid fa-users-line"></i>
+        </div>
+        <h3 class="text-base font-bold text-white mb-2">Private Isolated Live Queue</h3>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          No cross-data leak. Doctors manage their own private queue while patients track live status remotely to avoid overcrowded waiting rooms.
+        </p>
+      </div>
+
+      <div class="glass-card p-6 rounded-3xl border border-slate-800">
+        <div class="w-12 h-12 bg-purple-500/10 border border-purple-500/20 rounded-2xl flex items-center justify-center text-purple-400 text-xl mb-4">
+          <i class="fa-solid fa-brands fa-whatsapp"></i>
+        </div>
+        <h3 class="text-base font-bold text-white mb-2">WhatsApp Patient Automation</h3>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Direct status sync and instant appointment confirmations via WhatsApp integration for frictionless engagement.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-4xl mx-auto px-6 py-12">
+    <div class="glass-card p-8 rounded-3xl border border-slate-800 flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
+      <div class="w-24 h-24 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-3xl font-extrabold text-white shadow-xl shadow-indigo-500/20 shrink-0">
+        S
+      </div>
       <div>
-        <label class="block text-xs font-bold text-slate-600 mb-1">Select Role:</label>
-        <select id="regRole" onchange="toggleFields()" class="w-full p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:outline-none">
-          <option value="DOCTOR">Doctor</option>
-          <option value="PATIENT">Patient</option>
-        </select>
+        <h3 class="text-lg font-bold text-white">Message from the Founder</h3>
+        <p class="text-xs text-blue-400 font-semibold mb-2">Sukhvinder — Founder & Lead Architect</p>
+        <p class="text-xs text-slate-400 italic leading-relaxed">
+          "ClinicCare AI was engineered to eliminate waiting anxiety for patients and provide doctors with organized, intelligent tools so they can focus on delivering exceptional patient care."
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="border-t border-slate-800/80 py-6 text-center text-xs text-slate-500">
+    © 2026 ClinicCare AI. All rights reserved. Managed by Founder Sukhvinder.
+  </footer>
+
+  <div id="authModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl p-8 w-full max-w-md relative">
+      
+      <button onclick="closeAuthModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <h2 class="text-2xl font-extrabold text-center text-white mb-1">ClinicCare Portal</h2>
+      <p class="text-xs text-center text-slate-400 mb-6">Doctor, Patient & Owner Access</p>
+
+      <div class="flex bg-slate-950 p-1 rounded-xl mb-6 border border-slate-800">
+        <button onclick="switchTab('login')" id="loginTab" class="flex-1 py-2 text-xs font-bold rounded-lg bg-blue-600 text-white shadow">Sign In</button>
+        <button onclick="switchTab('register')" id="registerTab" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-400">Register</button>
       </div>
 
-      <!-- Doctor Extra Fields -->
-      <div id="doctorFields" class="space-y-3">
-        <input type="text" id="clinicName" placeholder="Clinic Name" class="w-full p-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-        <input type="text" id="location" placeholder="City / Location" class="w-full p-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+      <div id="loginForm" class="space-y-4">
+        <input type="text" id="loginMobile" placeholder="Mobile Number" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-blue-500">
+        <input type="password" id="loginPass" placeholder="Password" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-blue-500">
+        <button onclick="handleLogin()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl text-sm transition shadow-lg shadow-blue-600/30">Sign In</button>
       </div>
 
-      <button onclick="handleRegister()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-sm transition shadow-lg shadow-emerald-500/30">Register Account</button>
+      <div id="registerForm" class="space-y-3 hidden">
+        <input type="text" id="regName" placeholder="Full Name" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500">
+        <input type="text" id="regMobile" placeholder="Mobile Number" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500">
+        <input type="password" id="regPass" placeholder="Password" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500">
+        
+        <div>
+          <label class="block text-xs font-bold text-slate-400 mb-1">Select Role:</label>
+          <select id="regRole" onchange="toggleFields()" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none">
+            <option value="DOCTOR">Doctor</option>
+            <option value="PATIENT">Patient</option>
+          </select>
+        </div>
+
+        <div id="doctorFields" class="space-y-3">
+          <input type="text" id="clinicName" placeholder="Clinic Name" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500">
+          <input type="text" id="location" placeholder="City / Location" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500">
+        </div>
+
+        <button onclick="handleRegister()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-sm transition shadow-lg shadow-emerald-600/30">Register Account</button>
+      </div>
     </div>
   </div>
 
   <script>
+    function openAuthModal(tab) {
+      document.getElementById('authModal').classList.remove('hidden');
+      switchTab(tab);
+    }
+
+    function closeAuthModal() {
+      document.getElementById('authModal').classList.add('hidden');
+    }
+
     function switchTab(tab) {
       if (tab === 'login') {
         document.getElementById('loginForm').classList.remove('hidden');
         document.getElementById('registerForm').classList.add('hidden');
-        document.getElementById('loginTab').className = "flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow text-slate-800";
-        document.getElementById('registerTab').className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-500";
+        document.getElementById('loginTab').className = "flex-1 py-2 text-xs font-bold rounded-lg bg-blue-600 text-white shadow";
+        document.getElementById('registerTab').className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-400";
       } else {
         document.getElementById('registerForm').classList.remove('hidden');
         document.getElementById('loginForm').classList.add('hidden');
-        document.getElementById('registerTab').className = "flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow text-slate-800";
-        document.getElementById('loginTab').className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-500";
+        document.getElementById('registerTab').className = "flex-1 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white shadow";
+        document.getElementById('loginTab').className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-400";
       }
     }
 
