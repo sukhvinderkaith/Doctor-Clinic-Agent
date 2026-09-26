@@ -2,12 +2,15 @@ const express = require("express");
 const path = require("path");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+// Render के लिए पोर्ट 10000 डिफ़ॉल्ट रूप से सही काम करेगा
+const PORT = process.env.PORT || 10000;
 const API_KEY = process.env.OPENAI_API_KEY;
 const MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
 
+// 1. मिडिलवेयर सेटअप (JSON डेटा रीड करने और फाइलों को लाइव करने के लिए)
 app.use(express.json({ limit: "1mb" }));
-app.use(express.static(path.join(__dirname, "public")));
+// यह लाइन आपके index.html को इंटरनेट पर लाइव करेगी
+app.use(express.static(__dirname));
 
 const SYSTEM_PROMPT = `
 You are ClinicCare AI, a cautious medical information and triage assistant for a clinic website.
@@ -32,6 +35,15 @@ At the end of a useful response, include:
 - "Next step: ..."
 `;
 
+// 2. होमपेज रूट (जब कोई आपकी साइट खोलेगा तो उसे index.html दिखेगी)
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// 3. हेल्थ चेक रूट (Render की चेकिंग के लिए)
+app.get("/health", (req, res) => res.json({ ok: true }));
+
+// 4. मुख्य चैट API रूट
 app.post("/api/chat", async (req, res) => {
   try {
     if (!API_KEY) {
@@ -79,20 +91,8 @@ app.post("/api/chat", async (req, res) => {
     res.status(500).json({ error: "Server error. Please try again." });
   }
 });
-const express = require('express');
-const path = require('path');
-const app = express();
 
-// Serve static files from the current directory
-app.use(express.static(__dirname)); 
-
-// Fallback to serve index.html for the root route
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-app.get("/health", (req, res) => res.json({ ok: true }));
-
+// 5. सबसे आखरी में: सर्वर को चालू करने का कोड
 app.listen(PORT, () => {
   console.log(`Doctor AI Agent running on port ${PORT}`);
 });
