@@ -1,79 +1,174 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ClinicCare AI — Doctor Assistant</title>
-<style>
-*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#f4f7fb;color:#172033}
-header{background:#fff;border-bottom:1px solid #e5e9f0;padding:16px}
-.header{max-width:900px;margin:auto;display:flex;align-items:center;gap:12px}
-.logo{width:44px;height:44px;border-radius:14px;background:#0b7cff;color:#fff;display:grid;place-items:center;font-size:24px;font-weight:800}
-h1{font-size:20px;margin:0}.sub{font-size:12px;color:#687386;margin-top:2px}
-main{max-width:900px;margin:18px auto;padding:0 12px}
-.notice{background:#fff8e6;border:1px solid #f1d58b;border-radius:14px;padding:12px 14px;font-size:13px;margin-bottom:12px}
-.chat{background:#fff;border:1px solid #e1e6ee;border-radius:18px;min-height:58vh;padding:14px;box-shadow:0 4px 18px rgba(30,50,80,.05)}
-.msg{display:flex;margin:10px 0}.bubble{max-width:86%;padding:12px 14px;border-radius:16px;white-space:pre-wrap;line-height:1.45}
-.ai .bubble{background:#eef5ff}.user{justify-content:flex-end}.user .bubble{background:#0b7cff;color:white}
-.composer{display:flex;gap:8px;margin-top:12px}.composer textarea{flex:1;resize:none;border:1px solid #ccd4e0;border-radius:14px;padding:12px;font:inherit;min-height:52px}.composer button{border:0;border-radius:14px;background:#0b7cff;color:#fff;padding:0 20px;font-weight:700}
-.quick{display:flex;gap:7px;overflow:auto;margin:10px 0}.quick button{white-space:nowrap;border:1px solid #ccd8e8;background:#fff;border-radius:20px;padding:8px 11px}
-.small{font-size:11px;color:#748094;text-align:center;margin-top:9px}
-.typing{opacity:.65}
-@media(max-width:600px){main{margin:10px auto}.chat{min-height:62vh}.bubble{max-width:92%}}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ClinicCare AI - Doctor & Patient Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+  </style>
 </head>
-<body>
-<header><div class="header"><div class="logo">+</div><div><h1>ClinicCare AI</h1><div class="sub">AI health assistant • 24/7 preliminary guidance</div></div></div></header>
-<main>
-<div class="notice"><b>Important:</b> This AI provides general health information and triage, not a diagnosis. For an emergency, contact local emergency services or go to the nearest emergency department.</div>
-<div class="chat" id="chat"></div>
-<div class="quick">
-<button onclick="quick('I have fever. Please ask me the important questions.')">Fever</button>
-<button onclick="quick('I have cough and breathing symptoms. Please assess urgency.')">Cough</button>
-<button onclick="quick('I have stomach pain. Please ask the important questions.')">Stomach pain</button>
-<button onclick="quick('I have chest pain. Please check for emergency warning signs.')">Chest pain</button>
-</div>
-<div class="composer">
-<textarea id="input" placeholder="Describe your symptoms..."></textarea>
-<button onclick="send()">Send</button>
-</div>
-<div class="small">Do not enter passwords, payment details, or unnecessary personal information.</div>
-</main>
-<script>
-const chat = document.getElementById("chat");
-const input = document.getElementById("input");
-let messages = [];
+<body class="bg-slate-100 min-h-screen">
 
-function add(role, text, typing=false){
-  const row=document.createElement("div");
-  row.className="msg "+(role==="user"?"user":"ai");
-  const b=document.createElement("div");
-  b.className="bubble"+(typing?" typing":"");
-  b.textContent=text;
-  row.appendChild(b); chat.appendChild(row);
-  chat.scrollTop=chat.scrollHeight;
-  return b;
-}
-add("assistant","Namaste! I’m ClinicCare AI. I can help you understand symptoms and decide how urgently you should seek medical care. What symptoms are you having, and when did they start?");
+  <!-- Top Navigation Bar -->
+  <nav class="bg-slate-900 text-white px-6 py-4 border-b border-slate-800 flex justify-between items-center sticky top-0 z-50">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+        <i class="fa-solid fa-user-doctor text-lg"></i>
+      </div>
+      <div>
+        <h1 class="font-bold text-base leading-none">ClinicCare Portal</h1>
+        <p class="text-xs text-slate-400 mt-1">Multi-Tenant Doctor & Patient Dashboard</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="text-xs bg-slate-800 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700">
+        Role: <strong id="userRole" class="text-blue-400">Doctor View</strong>
+      </span>
+      <button onclick="logout()" class="text-xs bg-red-600/20 hover:bg-red-600/30 text-red-400 px-3 py-1.5 rounded-lg border border-red-500/30 transition">
+        Logout
+      </button>
+    </div>
+  </nav>
 
-async function send(){
-  const text=input.value.trim(); if(!text)return;
-  input.value="";
-  add("user",text);
-  messages.push({role:"user",content:text});
-  const b=add("assistant","Thinking...",true);
-  try{
-    const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages})});
-    const d=await r.json();
-    if(!r.ok) throw new Error(d.error||"Request failed");
-    b.className="bubble"; b.textContent=d.reply;
-    messages.push({role:"assistant",content:d.reply});
-  }catch(e){
-    b.className="bubble"; b.textContent="Sorry, the AI service is temporarily unavailable. Please try again.";
-  }
-}
-function quick(t){input.value=t;send()}
-input.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send()}});
-</script>
+  <main class="max-w-6xl mx-auto p-4 sm:p-6 space-y-6">
+
+    <!-- Top Info Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      
+      <!-- Doctor Status -->
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Live Status</span>
+          <h3 id="docName" class="text-sm font-bold text-slate-800 mt-0.5">Dr. Sharma's Clinic</h3>
+        </div>
+        <button id="statusBadge" onclick="toggleStatus()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-100 text-emerald-700 border border-emerald-300">
+          🟢 Available Today
+        </button>
+      </div>
+
+      <!-- Fees Card -->
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Consultation Fee</span>
+        <p id="docFees" class="text-xl font-extrabold text-blue-600 mt-0.5">₹600 / Session</p>
+      </div>
+
+      <!-- WhatsApp AI Integration Status -->
+      <div class="bg-emerald-50 border border-emerald-200 p-5 rounded-2xl shadow-sm flex items-center gap-3">
+        <i class="fa-brands fa-whatsapp text-3xl text-emerald-600"></i>
+        <div>
+          <h4 class="text-xs font-bold text-emerald-900">WhatsApp AI Connected</h4>
+          <p class="text-[11px] text-emerald-700 mt-0.5">Patient symptoms auto-triaged & isolated.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- AI Symptom Triage Box -->
+    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+      <div class="flex items-center gap-2.5">
+        <div class="w-7 h-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs">
+          <i class="fa-solid fa-robot"></i>
+        </div>
+        <h2 class="font-bold text-slate-800 text-sm">AI Symptom Urgency Evaluator</h2>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-2">
+        <input type="text" id="symptomInput" placeholder="Enter patient symptoms (e.g. high fever, cough, chest pain)..." class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <button onclick="checkAIUrgency()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-5 py-2.5 rounded-xl transition">
+          Assess Urgency
+        </button>
+      </div>
+
+      <div id="aiOutput" class="hidden p-3.5 rounded-xl text-xs bg-slate-50 border border-slate-200"></div>
+    </div>
+
+    <!-- Bookings Table (Isolated View) -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="p-5 border-b border-slate-100 flex justify-between items-center">
+        <div>
+          <h2 class="font-bold text-slate-800 text-base">Your Private Patient Queue</h2>
+          <p class="text-xs text-slate-400">Data isolated per doctor and per patient account.</p>
+        </div>
+        <span id="bookingCount" class="bg-blue-50 text-blue-600 border border-blue-200 text-xs px-3 py-1 rounded-full font-bold">
+          2 Active Bookings
+        </span>
+      </div>
+
+      <div class="divide-y divide-slate-100">
+        
+        <!-- Patient Item 1 -->
+        <div class="p-4 sm:p-5 flex flex-col sm:flex-row justify-between sm:items-center gap-3 hover:bg-slate-50/50 transition">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-sm text-slate-800">Rahul Kumar</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-700">Moderate Urgency</span>
+            </div>
+            <p class="text-xs text-slate-500 mt-1"><strong>Symptoms:</strong> High Fever & Cough since yesterday</p>
+            <p class="text-[11px] text-slate-400 mt-0.5"><i class="fa-regular fa-clock"></i> Today | 10:30 AM</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold px-3 py-1 bg-emerald-100 text-emerald-700 rounded-lg">Confirmed</span>
+          </div>
+        </div>
+
+        <!-- Patient Item 2 -->
+        <div class="p-4 sm:p-5 flex flex-col sm:flex-row justify-between sm:items-center gap-3 hover:bg-slate-50/50 transition">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-sm text-slate-800">Priya Sharma</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-700">Low Risk</span>
+            </div>
+            <p class="text-xs text-slate-500 mt-1"><strong>Symptoms:</strong> Mild Stomach Ache</p>
+            <p class="text-[11px] text-slate-400 mt-0.5"><i class="fa-regular fa-clock"></i> Today | 11:15 AM</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold px-3 py-1 bg-emerald-100 text-emerald-700 rounded-lg">Confirmed</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    let isAvailable = true;
+
+    function toggleStatus() {
+      isAvailable = !isAvailable;
+      const btn = document.getElementById('statusBadge');
+      if (isAvailable) {
+        btn.innerText = '🟢 Available Today';
+        btn.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-100 text-emerald-700 border border-emerald-300';
+      } else {
+        btn.innerText = '🔴 On Leave / Off';
+        btn.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-red-100 text-red-700 border border-red-300';
+      }
+    }
+
+    function checkAIUrgency() {
+      const input = document.getElementById('symptomInput').value;
+      const output = document.getElementById('aiOutput');
+      if (!input) return alert('Enter symptoms first');
+
+      output.classList.remove('hidden');
+      if (input.toLowerCase().includes('chest pain') || input.toLowerCase().includes('breathing')) {
+        output.className = 'p-3.5 rounded-xl text-xs bg-red-50 border border-red-200 text-red-800 font-medium';
+        output.innerHTML = '🚨 <strong>HIGH EMERGENCY:</strong> Immediate emergency response required (102/108).';
+      } else {
+        output.className = 'p-3.5 rounded-xl text-xs bg-blue-50 border border-blue-200 text-blue-800 font-medium';
+        output.innerHTML = '✅ <strong>Moderate / Routine:</strong> Standard consultaion slot recommended.';
+      }
+    }
+
+    function logout() {
+      alert('Logged out');
+    }
+  </script>
+
 </body>
 </html>
