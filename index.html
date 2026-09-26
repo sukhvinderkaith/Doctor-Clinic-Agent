@@ -1,174 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ClinicCare AI - Doctor & Patient Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClinicCare - Access Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
-    body { font-family: 'Plus Jakarta Sans', sans-serif; }
-  </style>
 </head>
-<body class="bg-slate-100 min-h-screen">
+<body class="bg-slate-900 min-h-screen flex items-center justify-center p-4">
 
-  <!-- Top Navigation Bar -->
-  <nav class="bg-slate-900 text-white px-6 py-4 border-b border-slate-800 flex justify-between items-center sticky top-0 z-50">
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-blue-500/20">
-        <i class="fa-solid fa-user-doctor text-lg"></i>
-      </div>
-      <div>
-        <h1 class="font-bold text-base leading-none">ClinicCare Portal</h1>
-        <p class="text-xs text-slate-400 mt-1">Multi-Tenant Doctor & Patient Dashboard</p>
-      </div>
+  <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md">
+    <h2 class="text-2xl font-bold text-center text-slate-800 mb-1">ClinicCare Portal</h2>
+    <p class="text-xs text-center text-slate-500 mb-6">Doctor, Patient & Owner Access</p>
+
+    <!-- Tab Selection -->
+    <div class="flex bg-slate-100 p-1 rounded-xl mb-6">
+      <button onclick="switchTab('login')" id="loginTab" class="flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow text-slate-800">Login</button>
+      <button onclick="switchTab('register')" id="registerTab" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-500">Register</button>
     </div>
-    <div class="flex items-center gap-3">
-      <span class="text-xs bg-slate-800 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700">
-        Role: <strong id="userRole" class="text-blue-400">Doctor View</strong>
-      </span>
-      <button onclick="logout()" class="text-xs bg-red-600/20 hover:bg-red-600/30 text-red-400 px-3 py-1.5 rounded-lg border border-red-500/30 transition">
-        Logout
-      </button>
+
+    <!-- Login Form -->
+    <div id="loginForm" class="space-y-4">
+      <input type="text" id="loginMobile" placeholder="Mobile Number" class="w-full p-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <input type="password" id="loginPass" placeholder="Password" class="w-full p-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <button onclick="handleLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-sm transition shadow-lg shadow-blue-500/30">Sign In</button>
     </div>
-  </nav>
 
-  <main class="max-w-6xl mx-auto p-4 sm:p-6 space-y-6">
-
-    <!-- Top Info Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <!-- Register Form -->
+    <div id="registerForm" class="space-y-3 hidden">
+      <input type="text" id="regName" placeholder="Full Name" class="w-full p-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+      <input type="text" id="regMobile" placeholder="Mobile Number" class="w-full p-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+      <input type="password" id="regPass" placeholder="Password" class="w-full p-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
       
-      <!-- Doctor Status -->
-      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-        <div>
-          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Live Status</span>
-          <h3 id="docName" class="text-sm font-bold text-slate-800 mt-0.5">Dr. Sharma's Clinic</h3>
-        </div>
-        <button id="statusBadge" onclick="toggleStatus()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-100 text-emerald-700 border border-emerald-300">
-          🟢 Available Today
-        </button>
+      <div>
+        <label class="block text-xs font-bold text-slate-600 mb-1">Select Role:</label>
+        <select id="regRole" onchange="toggleFields()" class="w-full p-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:outline-none">
+          <option value="DOCTOR">Doctor</option>
+          <option value="PATIENT">Patient</option>
+        </select>
       </div>
 
-      <!-- Fees Card -->
-      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Consultation Fee</span>
-        <p id="docFees" class="text-xl font-extrabold text-blue-600 mt-0.5">₹600 / Session</p>
+      <!-- Doctor Extra Fields -->
+      <div id="doctorFields" class="space-y-3">
+        <input type="text" id="clinicName" placeholder="Clinic Name" class="w-full p-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+        <input type="text" id="location" placeholder="City / Location" class="w-full p-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
       </div>
 
-      <!-- WhatsApp AI Integration Status -->
-      <div class="bg-emerald-50 border border-emerald-200 p-5 rounded-2xl shadow-sm flex items-center gap-3">
-        <i class="fa-brands fa-whatsapp text-3xl text-emerald-600"></i>
-        <div>
-          <h4 class="text-xs font-bold text-emerald-900">WhatsApp AI Connected</h4>
-          <p class="text-[11px] text-emerald-700 mt-0.5">Patient symptoms auto-triaged & isolated.</p>
-        </div>
-      </div>
-
+      <button onclick="handleRegister()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-sm transition shadow-lg shadow-emerald-500/30">Register Account</button>
     </div>
-
-    <!-- AI Symptom Triage Box -->
-    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-      <div class="flex items-center gap-2.5">
-        <div class="w-7 h-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs">
-          <i class="fa-solid fa-robot"></i>
-        </div>
-        <h2 class="font-bold text-slate-800 text-sm">AI Symptom Urgency Evaluator</h2>
-      </div>
-
-      <div class="flex flex-col sm:flex-row gap-2">
-        <input type="text" id="symptomInput" placeholder="Enter patient symptoms (e.g. high fever, cough, chest pain)..." class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <button onclick="checkAIUrgency()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-5 py-2.5 rounded-xl transition">
-          Assess Urgency
-        </button>
-      </div>
-
-      <div id="aiOutput" class="hidden p-3.5 rounded-xl text-xs bg-slate-50 border border-slate-200"></div>
-    </div>
-
-    <!-- Bookings Table (Isolated View) -->
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-      <div class="p-5 border-b border-slate-100 flex justify-between items-center">
-        <div>
-          <h2 class="font-bold text-slate-800 text-base">Your Private Patient Queue</h2>
-          <p class="text-xs text-slate-400">Data isolated per doctor and per patient account.</p>
-        </div>
-        <span id="bookingCount" class="bg-blue-50 text-blue-600 border border-blue-200 text-xs px-3 py-1 rounded-full font-bold">
-          2 Active Bookings
-        </span>
-      </div>
-
-      <div class="divide-y divide-slate-100">
-        
-        <!-- Patient Item 1 -->
-        <div class="p-4 sm:p-5 flex flex-col sm:flex-row justify-between sm:items-center gap-3 hover:bg-slate-50/50 transition">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="font-bold text-sm text-slate-800">Rahul Kumar</span>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-700">Moderate Urgency</span>
-            </div>
-            <p class="text-xs text-slate-500 mt-1"><strong>Symptoms:</strong> High Fever & Cough since yesterday</p>
-            <p class="text-[11px] text-slate-400 mt-0.5"><i class="fa-regular fa-clock"></i> Today | 10:30 AM</p>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="text-xs font-bold px-3 py-1 bg-emerald-100 text-emerald-700 rounded-lg">Confirmed</span>
-          </div>
-        </div>
-
-        <!-- Patient Item 2 -->
-        <div class="p-4 sm:p-5 flex flex-col sm:flex-row justify-between sm:items-center gap-3 hover:bg-slate-50/50 transition">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="font-bold text-sm text-slate-800">Priya Sharma</span>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-700">Low Risk</span>
-            </div>
-            <p class="text-xs text-slate-500 mt-1"><strong>Symptoms:</strong> Mild Stomach Ache</p>
-            <p class="text-[11px] text-slate-400 mt-0.5"><i class="fa-regular fa-clock"></i> Today | 11:15 AM</p>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="text-xs font-bold px-3 py-1 bg-emerald-100 text-emerald-700 rounded-lg">Confirmed</span>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-  </main>
+  </div>
 
   <script>
-    let isAvailable = true;
-
-    function toggleStatus() {
-      isAvailable = !isAvailable;
-      const btn = document.getElementById('statusBadge');
-      if (isAvailable) {
-        btn.innerText = '🟢 Available Today';
-        btn.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-100 text-emerald-700 border border-emerald-300';
+    function switchTab(tab) {
+      if (tab === 'login') {
+        document.getElementById('loginForm').classList.remove('hidden');
+        document.getElementById('registerForm').classList.add('hidden');
+        document.getElementById('loginTab').className = "flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow text-slate-800";
+        document.getElementById('registerTab').className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-500";
       } else {
-        btn.innerText = '🔴 On Leave / Off';
-        btn.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-red-100 text-red-700 border border-red-300';
+        document.getElementById('registerForm').classList.remove('hidden');
+        document.getElementById('loginForm').classList.add('hidden');
+        document.getElementById('registerTab').className = "flex-1 py-2 text-xs font-bold rounded-lg bg-white shadow text-slate-800";
+        document.getElementById('loginTab').className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-500";
       }
     }
 
-    function checkAIUrgency() {
-      const input = document.getElementById('symptomInput').value;
-      const output = document.getElementById('aiOutput');
-      if (!input) return alert('Enter symptoms first');
+    function toggleFields() {
+      const role = document.getElementById('regRole').value;
+      if (role === 'DOCTOR') document.getElementById('doctorFields').classList.remove('hidden');
+      else document.getElementById('doctorFields').classList.add('hidden');
+    }
 
-      output.classList.remove('hidden');
-      if (input.toLowerCase().includes('chest pain') || input.toLowerCase().includes('breathing')) {
-        output.className = 'p-3.5 rounded-xl text-xs bg-red-50 border border-red-200 text-red-800 font-medium';
-        output.innerHTML = '🚨 <strong>HIGH EMERGENCY:</strong> Immediate emergency response required (102/108).';
+    async function handleRegister() {
+      const body = {
+        name: document.getElementById('regName').value,
+        mobile: document.getElementById('regMobile').value,
+        password: document.getElementById('regPass').value,
+        role: document.getElementById('regRole').value,
+        clinicName: document.getElementById('clinicName').value,
+        location: document.getElementById('location').value
+      };
+
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert('Account Created Successfully! 7 Days Free Trial Active.');
+        switchTab('login');
       } else {
-        output.className = 'p-3.5 rounded-xl text-xs bg-blue-50 border border-blue-200 text-blue-800 font-medium';
-        output.innerHTML = '✅ <strong>Moderate / Routine:</strong> Standard consultaion slot recommended.';
+        alert(data.message || 'Registration failed');
       }
     }
 
-    function logout() {
-      alert('Logged out');
+    async function handleLogin() {
+      const mobile = document.getElementById('loginMobile').value;
+      const password = document.getElementById('loginPass').value;
+
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mobile, password })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        localStorage.setItem('currentUser', JSON.stringify(data.user));
+        if (data.user.role === 'ADMIN') window.location.href = '/admin.html';
+        else if (data.user.role === 'DOCTOR') window.location.href = '/doctor.html';
+        else window.location.href = '/patient.html';
+      } else {
+        alert(data.message || 'Login failed');
+      }
     }
   </script>
-
 </body>
 </html>
