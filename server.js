@@ -2,13 +2,14 @@ const express = require('express');
 const app = express();
 const path = require('path');
 
-// Express JSON and Static Middleware
+// Express JSON
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+
+// Main folder ko hi static serve karein (Public folder ki zaroorat nahi)
+app.use(express.static(__dirname));
 
 // In-Memory Database Simulation
 let users = [];
-let appointments = [];
 
 // Default Owner Account (Admin Login: Mobile: 0000000000, Pass: admin)
 users.push({
@@ -22,10 +23,10 @@ users.push({
 
 // Explicit Root Route -> Index.html Direct Serve
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// REGISTER ROUTE (Mobile Number, Location & Clinic Name)
+// REGISTER ROUTE (Without Gmail ID)
 app.post('/api/register', (req, res) => {
   const { name, mobile, password, role, clinicName, location } = req.body;
 
@@ -105,9 +106,9 @@ app.post('/api/admin/update-status', (req, res) => {
   res.status(404).json({ message: 'User not found' });
 });
 
-// Catch-all Wildcard Route (Fixes 404 / Cannot GET errors)
+// Catch-all Wildcard Route
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Start Server
