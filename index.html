@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ClinicCare AI — Doctor Assistant</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#f4f7fb;color:#172033}
+header{background:#fff;border-bottom:1px solid #e5e9f0;padding:16px}
+.header{max-width:900px;margin:auto;display:flex;align-items:center;gap:12px}
+.logo{width:44px;height:44px;border-radius:14px;background:#0b7cff;color:#fff;display:grid;place-items:center;font-size:24px;font-weight:800}
+h1{font-size:20px;margin:0}.sub{font-size:12px;color:#687386;margin-top:2px}
+main{max-width:900px;margin:18px auto;padding:0 12px}
+.notice{background:#fff8e6;border:1px solid #f1d58b;border-radius:14px;padding:12px 14px;font-size:13px;margin-bottom:12px}
+.chat{background:#fff;border:1px solid #e1e6ee;border-radius:18px;min-height:58vh;padding:14px;box-shadow:0 4px 18px rgba(30,50,80,.05)}
+.msg{display:flex;margin:10px 0}.bubble{max-width:86%;padding:12px 14px;border-radius:16px;white-space:pre-wrap;line-height:1.45}
+.ai .bubble{background:#eef5ff}.user{justify-content:flex-end}.user .bubble{background:#0b7cff;color:white}
+.composer{display:flex;gap:8px;margin-top:12px}.composer textarea{flex:1;resize:none;border:1px solid #ccd4e0;border-radius:14px;padding:12px;font:inherit;min-height:52px}.composer button{border:0;border-radius:14px;background:#0b7cff;color:#fff;padding:0 20px;font-weight:700}
+.quick{display:flex;gap:7px;overflow:auto;margin:10px 0}.quick button{white-space:nowrap;border:1px solid #ccd8e8;background:#fff;border-radius:20px;padding:8px 11px}
+.small{font-size:11px;color:#748094;text-align:center;margin-top:9px}
+.typing{opacity:.65}
+@media(max-width:600px){main{margin:10px auto}.chat{min-height:62vh}.bubble{max-width:92%}}
+</style>
+</head>
+<body>
+<header><div class="header"><div class="logo">+</div><div><h1>ClinicCare AI</h1><div class="sub">AI health assistant • 24/7 preliminary guidance</div></div></div></header>
+<main>
+<div class="notice"><b>Important:</b> This AI provides general health information and triage, not a diagnosis. For an emergency, contact local emergency services or go to the nearest emergency department.</div>
+<div class="chat" id="chat"></div>
+<div class="quick">
+<button onclick="quick('I have fever. Please ask me the important questions.')">Fever</button>
+<button onclick="quick('I have cough and breathing symptoms. Please assess urgency.')">Cough</button>
+<button onclick="quick('I have stomach pain. Please ask the important questions.')">Stomach pain</button>
+<button onclick="quick('I have chest pain. Please check for emergency warning signs.')">Chest pain</button>
+</div>
+<div class="composer">
+<textarea id="input" placeholder="Describe your symptoms..."></textarea>
+<button onclick="send()">Send</button>
+</div>
+<div class="small">Do not enter passwords, payment details, or unnecessary personal information.</div>
+</main>
+<script>
+const chat = document.getElementById("chat");
+const input = document.getElementById("input");
+let messages = [];
+
+function add(role, text, typing=false){
+  const row=document.createElement("div");
+  row.className="msg "+(role==="user"?"user":"ai");
+  const b=document.createElement("div");
+  b.className="bubble"+(typing?" typing":"");
+  b.textContent=text;
+  row.appendChild(b); chat.appendChild(row);
+  chat.scrollTop=chat.scrollHeight;
+  return b;
+}
+add("assistant","Namaste! I’m ClinicCare AI. I can help you understand symptoms and decide how urgently you should seek medical care. What symptoms are you having, and when did they start?");
+
+async function send(){
+  const text=input.value.trim(); if(!text)return;
+  input.value="";
+  add("user",text);
+  messages.push({role:"user",content:text});
+  const b=add("assistant","Thinking...",true);
+  try{
+    const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages})});
+    const d=await r.json();
+    if(!r.ok) throw new Error(d.error||"Request failed");
+    b.className="bubble"; b.textContent=d.reply;
+    messages.push({role:"assistant",content:d.reply});
+  }catch(e){
+    b.className="bubble"; b.textContent="Sorry, the AI service is temporarily unavailable. Please try again.";
+  }
+}
+function quick(t){input.value=t;send()}
+input.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send()}});
+</script>
+</body>
+</html>
