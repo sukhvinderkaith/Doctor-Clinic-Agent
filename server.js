@@ -5,9 +5,13 @@ const path = require('path');
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// In-Memory Database Simulation
+// Explicit Home Route Fix
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// In-Memory Database
 let users = [];
-let appointments = [];
 
 // Default Owner Account (Admin Login: Mobile: 0000000000, Pass: admin)
 users.push({
@@ -19,7 +23,7 @@ users.push({
   status: 'ACTIVE'
 });
 
-// REGISTER ROUTE (Without Gmail ID)
+// REGISTER ROUTE
 app.post('/api/register', (req, res) => {
   const { name, mobile, password, role, clinicName, location } = req.body;
 
@@ -33,14 +37,14 @@ app.post('/api/register', (req, res) => {
   }
 
   const trialEndDate = new Date();
-  trialEndDate.setDate(trialEndDate.getDate() + 7); // 7 Days Free Trial
+  trialEndDate.setDate(trialEndDate.getDate() + 7);
 
   const newUser = {
     id: 'usr_' + Date.now(),
     name,
     mobile,
     password,
-    role, // 'DOCTOR' ya 'PATIENT'
+    role,
     clinicName: clinicName || '',
     location: location || '',
     status: role === 'DOCTOR' ? 'TRIAL' : 'ACTIVE',
@@ -61,7 +65,6 @@ app.post('/api/login', (req, res) => {
     return res.status(401).json({ message: 'Invalid Mobile Number or Password' });
   }
 
-  // Check Subscription Status for Doctor
   if (user.role === 'DOCTOR') {
     const now = new Date();
     if (user.status === 'BLOCKED' || user.status === 'EXPIRED') {
@@ -69,19 +72,18 @@ app.post('/api/login', (req, res) => {
     }
     if (user.status === 'TRIAL' && now > new Date(user.trialEnd)) {
       user.status = 'EXPIRED';
-      return res.status(403).json({ message: 'Aapka Free Trial khatam ho chuka hai. Continue karne ke liye payment karein.' });
+      return res.status(403).json({ message: 'Aapka Free Trial khatam ho chuka hai.' });
     }
   }
 
   res.json({ message: 'Login Success', user });
 });
 
-// ADMIN API: Get All Users
+// ADMIN APIs
 app.get('/api/admin/users', (req, res) => {
   res.json(users);
 });
 
-// ADMIN API: Update Status / Extend Trial
 app.post('/api/admin/update-status', (req, res) => {
   const { userId, status, days } = req.body;
   const user = users.find(u => u.id === userId);
