@@ -3,157 +3,286 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ClinicCare AI - Next-Gen Clinic Automation & AI Triage</title>
+  <title>ClinicCare AI - Next-Gen Clinic Automation & Patient Loyalty System</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
-    .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
-    .hero-gradient { background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.15), transparent 50%), radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.1), transparent 50%); }
+    .glass-card { background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    .glass-card-hover { transition: all 0.3s ease; }
+    .glass-card-hover:hover { transform: translateY(-4px); border-color: rgba(59, 130, 246, 0.4); box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.3); }
+    .hero-gradient { background: radial-gradient(circle at 80% 10%, rgba(59, 130, 246, 0.18), transparent 40%), radial-gradient(circle at 20% 90%, rgba(16, 185, 129, 0.12), transparent 40%); }
+    .logo-glow { filter: drop-shadow(0px 0px 8px rgba(16, 185, 129, 0.6)); }
+    .badge-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col justify-between hero-gradient">
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col justify-between hero-gradient overflow-x-hidden">
 
-  <nav class="border-b border-slate-800/80 bg-slate-900/50 backdrop-blur-md sticky top-0 z-40 px-6 py-4">
+  <!-- NAVBAR -->
+  <nav class="border-b border-slate-800/80 bg-slate-900/80 backdrop-blur-md sticky top-0 z-40 px-4 sm:px-8 py-3.5">
     <div class="max-w-7xl mx-auto flex justify-between items-center">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-gradient-to-tr from-blue-600 to-emerald-500 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/20">
-          <i class="fa-solid fa-stethos-cope"></i>
+      
+      <!-- SPECIAL BRAND LOGO -->
+      <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.reload()">
+        <div class="relative w-10 h-10 sm:w-11 sm:h-11 bg-gradient-to-tr from-blue-600 via-indigo-600 to-emerald-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/25 logo-glow">
+          <i class="fa-solid fa-heart-pulse text-lg sm:text-xl text-emerald-300"></i>
+          <span class="absolute -top-1 -right-1 flex h-3 w-3">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+          </span>
         </div>
         <div>
-          <span class="text-lg font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">ClinicCare AI</span>
-          <span class="block text-[10px] text-slate-400 -mt-1 font-medium">Founded by Sukhvinder</span>
+          <span class="text-lg sm:text-xl font-black tracking-tight bg-gradient-to-r from-white via-slate-100 to-blue-300 bg-clip-text text-transparent">ClinicCare<span class="text-emerald-400">.AI</span></span>
+          <span class="block text-[9px] sm:text-[10px] text-slate-400 -mt-1 font-semibold tracking-wider uppercase">Smart Clinic Operating System</span>
         </div>
       </div>
 
-      <div class="flex items-center gap-3">
-        <button onclick="openAuthModal('login')" class="text-xs font-semibold text-slate-300 hover:text-white px-4 py-2.5 rounded-xl transition">Sign In</button>
-        <button onclick="openAuthModal('register')" class="text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl transition shadow-lg shadow-blue-600/30">Get Started Free</button>
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <button onclick="openAuthModal('login')" class="text-xs sm:text-sm font-semibold text-slate-300 hover:text-white px-3 sm:px-4 py-2 rounded-xl transition">Sign In</button>
+        <button onclick="openAuthModal('register')" class="text-xs sm:text-sm font-bold bg-gradient-to-r from-blue-600 to-emerald-500 hover:from-blue-500 hover:to-emerald-400 text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl transition shadow-lg shadow-blue-600/25">Get Started</button>
       </div>
     </div>
   </nav>
 
-  <header class="max-w-7xl mx-auto px-6 pt-16 pb-12 text-center space-y-6">
-    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium">
-      <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
-      AI-Powered Clinical Management Suite
-    </div>
-    
-    <h1 class="text-4xl md:text-6xl font-black text-white tracking-tight max-w-4xl mx-auto leading-tight">
-      Automate Patient Queues, AI Symptom Triage & Practice Growth.
-    </h1>
-    
-    <p class="text-slate-400 text-base md:text-lg max-w-2xl mx-auto">
-      ClinicCare AI helps healthcare providers streamline patient intake, reduce wait times with smart queue isolation, and boost practice efficiency seamlessly.
-    </p>
+  <!-- HERO SECTION WITH DOCTOR & HOSPITAL VISUAL ILLUSTRATION -->
+  <header class="max-w-7xl mx-auto px-4 sm:px-6 pt-8 sm:pt-14 pb-12">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-center">
+      
+      <!-- Left Column: High-Converting Headline & Info -->
+      <div class="lg:col-span-7 space-y-5 sm:space-y-6 text-center lg:text-left">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold">
+          <i class="fa-solid fa-wand-magic-sparkles text-emerald-400"></i>
+          AI-Powered Smart Clinic Platform
+        </div>
+        
+        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.15]">
+          Aapke Patient Baneaney <span class="bg-gradient-to-r from-blue-400 via-emerald-400 to-teal-300 bg-clip-text text-transparent">Permanent Loyal Customers!</span>
+        </h1>
+        
+        <p class="text-slate-300 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl mx-auto lg:mx-0">
+          ClinicCare AI se doctor ka <span class="text-emerald-400 font-semibold">ahem time bachega</span> aur patients ke liye <span class="text-blue-400 font-semibold">24/7 Automated Online & WhatsApp Appointment Booking</span> enable hoga. Smart queue management se patients hamesha aapke clinic hi aayenge!
+        </p>
 
-    <div class="flex flex-wrap justify-center gap-4 pt-4">
-      <button onclick="openAuthModal('register')" class="bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-500 hover:to-emerald-500 text-white font-bold text-sm px-8 py-4 rounded-2xl transition shadow-xl shadow-emerald-500/10 flex items-center gap-2">
-        <i class="fa-solid fa-[#00ff88] fa-user-doctor"></i> Register Your Clinic
-      </button>
-      <button onclick="openAuthModal('login')" class="bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 font-bold text-sm px-8 py-4 rounded-2xl transition">
-        Access Portal
-      </button>
+        <!-- CTAs -->
+        <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-3 sm:gap-4 pt-2">
+          <button onclick="openAuthModal('register')" class="bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-500 hover:from-blue-500 hover:to-emerald-400 text-white font-bold text-sm px-7 py-3.5 rounded-2xl transition shadow-xl shadow-blue-600/20 flex items-center justify-center gap-2.5">
+            <i class="fa-solid fa-hospital-user text-emerald-300 text-base"></i> Register Your Clinic Free
+          </button>
+          <button onclick="openAuthModal('login')" class="bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-200 font-bold text-sm px-6 py-3.5 rounded-2xl transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-right-to-bracket text-blue-400"></i> Access Portal
+          </button>
+        </div>
+
+        <!-- Trust Badges -->
+        <div class="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-slate-400 font-medium">
+          <span class="flex items-center gap-2"><i class="fa-solid fa-check-circle text-emerald-400"></i> Instant 7-Day Free Trial</span>
+          <span class="flex items-center gap-2"><i class="fa-solid fa-check-circle text-emerald-400"></i> WhatsApp Integration Ready</span>
+          <span class="flex items-center gap-2"><i class="fa-solid fa-check-circle text-emerald-400"></i> Zero Hardware Required</span>
+        </div>
+      </div>
+
+      <!-- Right Column: Interactive Hospital & Doctor Visual Card -->
+      <div class="lg:col-span-5 relative">
+        <!-- Main Hospital & AI Dashboard Visual Container -->
+        <div class="glass-card rounded-3xl p-5 border border-slate-700/80 shadow-2xl relative overflow-hidden group">
+          
+          <!-- Image Header with Hospital Banner -->
+          <div class="relative h-48 sm:h-56 rounded-2xl overflow-hidden mb-5 bg-slate-900">
+            <img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=800&q=80" alt="Doctor Consultation & Modern Hospital Clinic" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+            
+            <div class="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md px-3 py-1 rounded-full border border-slate-700 text-[11px] font-bold text-emerald-400 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 badge-pulse"></span> Doctor Live Console
+            </div>
+
+            <div class="absolute bottom-3 left-3 right-3 flex justify-between items-end">
+              <div>
+                <h4 class="text-white font-bold text-sm sm:text-base">City Super Specialty Clinic</h4>
+                <p class="text-slate-300 text-xs">Dr. Sukhvinder Singh (MD)</p>
+              </div>
+              <span class="bg-blue-600/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg backdrop-blur-sm">Queue Active</span>
+            </div>
+          </div>
+
+          <!-- Real-time Queue Simulation Widget -->
+          <div class="space-y-3">
+            <div class="bg-slate-900/90 rounded-xl p-3 border border-slate-800 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-sm">
+                  #01
+                </div>
+                <div>
+                  <div class="text-xs font-bold text-white">Rahul Verma <span class="ml-1 text-[10px] text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">Auto-Booked</span></div>
+                  <div class="text-[11px] text-slate-400"><i class="fa-brands fa-whatsapp text-emerald-400"></i> WhatsApp Confirmed • AI Triage: Normal</div>
+                </div>
+              </div>
+              <span class="text-xs text-emerald-400 font-bold bg-emerald-500/10 px-2 py-1 rounded-lg">In Cabin</span>
+            </div>
+
+            <div class="bg-slate-900/90 rounded-xl p-3 border border-slate-800 flex items-center justify-between opacity-80">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-sm">
+                  #02
+                </div>
+                <div>
+                  <div class="text-xs font-bold text-white">Priya Sharma</div>
+                  <div class="text-[11px] text-slate-400">Next Patient • Est. Wait: 4 Mins</div>
+                </div>
+              </div>
+              <span class="text-xs text-amber-400 font-bold bg-amber-500/10 px-2 py-1 rounded-lg">Waiting</span>
+            </div>
+          </div>
+
+          <!-- Floating Stat Badge Overlay -->
+          <div class="absolute -bottom-2 -right-2 sm:bottom-4 sm:-right-4 bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-700 p-3 rounded-2xl shadow-2xl hidden sm:flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-white">50+ Hours Saved</div>
+              <div class="text-[10px] text-slate-400">Every month per Doctor</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
     </div>
   </header>
 
-  <section class="max-w-7xl mx-auto px-6 py-12">
-    <div class="text-center mb-12">
-      <h2 class="text-2xl md:text-3xl font-extrabold text-white">Why Doctors Choose ClinicCare AI</h2>
-      <p class="text-xs text-slate-400 mt-2">Built specifically to address high patient volumes and clinic operational chaos.</p>
+  <!-- SPECIAL FEATURES & BENEFIT FOR DOCTORS SECTION -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-16 border-t border-slate-800/60">
+    <div class="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
+      <span class="text-xs font-extrabold text-blue-400 tracking-wider uppercase bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">Designed For Clinics & Hospitals</span>
+      <h2 class="text-2xl sm:text-4xl font-extrabold text-white mt-3">Dr. Ke Liye Sub Se Behtareen Features</h2>
+      <p class="text-xs sm:text-sm text-slate-400 mt-2">Kyun ClinicCare AI se jude 100+ doctors apne clinic management ko fully automate kar rahe hain.</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="glass-card p-6 rounded-3xl border border-slate-800">
-        <div class="w-12 h-12 bg-blue-500/10 border border-blue-500/20 rounded-2xl flex items-center justify-center text-blue-400 text-xl mb-4">
-          <i class="fa-solid fa-[#00aaff] fa-shield-virus"></i>
+      
+      <!-- Feature 1 -->
+      <div class="glass-card glass-card-hover p-6 rounded-3xl relative">
+        <div class="w-12 h-12 bg-blue-500/10 border border-blue-500/20 rounded-2xl flex items-center justify-center text-blue-400 text-2xl mb-4">
+          <i class="fa-solid fa-user-check"></i>
         </div>
-        <h3 class="text-base font-bold text-white mb-2">Automated AI Symptom Triage</h3>
-        <p class="text-xs text-slate-400 leading-relaxed">
-          AI evaluates patient condition urgency (Routine vs Moderate vs Urgent) before they step into the consultation room.
+        <h3 class="text-base sm:text-lg font-bold text-white mb-2">Permanent Patient Retention</h3>
+        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+          Digital patient history, auto follow-up alerts aur smooth consultation flow ke wajah se patient hamesha ke liye aapke loyal customer ban jayenge.
         </p>
       </div>
 
-      <div class="glass-card p-6 rounded-3xl border border-slate-800">
-        <div class="w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center text-emerald-400 text-xl mb-4">
-          <i class="fa-solid fa-users-line"></i>
+      <!-- Feature 2 -->
+      <div class="glass-card glass-card-hover p-6 rounded-3xl relative">
+        <div class="w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center text-emerald-400 text-2xl mb-4">
+          <i class="fa-solid fa-calendar-check"></i>
         </div>
-        <h3 class="text-base font-bold text-white mb-2">Private Isolated Live Queue</h3>
-        <p class="text-xs text-slate-400 leading-relaxed">
-          No cross-data leak. Doctors manage their own private queue while patients track live status remotely to avoid overcrowded waiting rooms.
+        <h3 class="text-base sm:text-lg font-bold text-white mb-2">Auto Appointment & Time Saver</h3>
+        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+          Patients bina kisi call ke online ya WhatsApp dwara auto-appointment book kar sakte hain. Phone calls par doctor aur staff ka time nahi kharab hoga.
         </p>
       </div>
 
-      <div class="glass-card p-6 rounded-3xl border border-slate-800">
-        <div class="w-12 h-12 bg-purple-500/10 border border-purple-500/20 rounded-2xl flex items-center justify-center text-purple-400 text-xl mb-4">
-          <i class="fa-solid fa-brands fa-whatsapp"></i>
+      <!-- Feature 3 -->
+      <div class="glass-card glass-card-hover p-6 rounded-3xl relative">
+        <div class="w-12 h-12 bg-purple-500/10 border border-purple-500/20 rounded-2xl flex items-center justify-center text-purple-400 text-2xl mb-4">
+          <i class="fa-solid fa-brain"></i>
         </div>
-        <h3 class="text-base font-bold text-white mb-2">WhatsApp Patient Automation</h3>
-        <p class="text-xs text-slate-400 leading-relaxed">
-          Direct status sync and instant appointment confirmations via WhatsApp integration for frictionless engagement.
+        <h3 class="text-base sm:text-lg font-bold text-white mb-2">Smart AI Symptom Triage</h3>
+        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+          Patient ke aane se pehle AI unke lakshan (symptoms) analyse karta hai aur urgency rate karta hai (Routine vs Moderate vs Emergency).
         </p>
       </div>
+
     </div>
   </section>
 
-  <section class="max-w-4xl mx-auto px-6 py-12">
-    <div class="glass-card p-8 rounded-3xl border border-slate-800 flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
-      <div class="w-24 h-24 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-3xl font-extrabold text-white shadow-xl shadow-indigo-500/20 shrink-0">
+  <!-- FOUNDER SECTION -->
+  <section class="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+    <div class="glass-card p-6 sm:p-10 rounded-3xl border border-slate-800 flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left relative overflow-hidden">
+      <div class="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-emerald-500 flex items-center justify-center text-3xl sm:text-4xl font-extrabold text-white shadow-xl shadow-blue-500/20 shrink-0">
         S
       </div>
       <div>
-        <h3 class="text-lg font-bold text-white">Message from the Founder</h3>
-        <p class="text-xs text-blue-400 font-semibold mb-2">Sukhvinder — Founder & Lead Architect</p>
-        <p class="text-xs text-slate-400 italic leading-relaxed">
-          "ClinicCare AI was engineered to eliminate waiting anxiety for patients and provide doctors with organized, intelligent tools so they can focus on delivering exceptional patient care."
+        <div class="inline-block bg-blue-500/10 text-blue-400 text-[11px] font-bold px-2.5 py-0.5 rounded-md mb-1">Founder's Vision</div>
+        <h3 class="text-lg sm:text-xl font-bold text-white">Sukhvinder — Founder & Lead Architect</h3>
+        <p class="text-xs sm:text-sm text-slate-400 italic mt-2 leading-relaxed">
+          "Humara maqsad har clinic ko cutting-edge AI se empower karna hai taaki doctors ka daily 2-3 ghante ka operational time bache aur patients ko hospital me ghanton wait na karna pade."
         </p>
       </div>
     </div>
   </section>
 
-  <footer class="border-t border-slate-800/80 py-6 text-center text-xs text-slate-500">
+  <!-- FOOTER -->
+  <footer class="border-t border-slate-800/80 py-6 text-center text-xs text-slate-500 px-4">
     © 2026 ClinicCare AI. All rights reserved. Managed by Founder Sukhvinder.
   </footer>
 
+  <!-- AUTH POPUP MODAL -->
   <div id="authModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl p-8 w-full max-w-md relative">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl p-6 sm:p-8 w-full max-w-md relative max-h-[90vh] overflow-y-auto">
       
-      <button onclick="closeAuthModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white text-lg">
+      <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg p-1">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
-      <h2 class="text-2xl font-extrabold text-center text-white mb-1">ClinicCare Portal</h2>
-      <p class="text-xs text-center text-slate-400 mb-6">Doctor, Patient & Owner Access</p>
+      <div class="text-center mb-6">
+        <div class="w-12 h-12 bg-blue-600/20 text-blue-400 rounded-2xl flex items-center justify-center mx-auto mb-2 text-xl">
+          <i class="fa-solid fa-heart-pulse"></i>
+        </div>
+        <h2 class="text-xl sm:text-2xl font-extrabold text-white">ClinicCare Portal</h2>
+        <p class="text-xs text-slate-400 mt-0.5">Doctor, Patient & Admin Login</p>
+      </div>
 
-      <div class="flex bg-slate-950 p-1 rounded-xl mb-6 border border-slate-800">
+      <!-- Tabs -->
+      <div class="flex bg-slate-950 p-1 rounded-xl mb-5 border border-slate-800">
         <button onclick="switchTab('login')" id="loginTab" class="flex-1 py-2 text-xs font-bold rounded-lg bg-blue-600 text-white shadow">Sign In</button>
         <button onclick="switchTab('register')" id="registerTab" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-400">Register</button>
       </div>
 
+      <!-- Login Form -->
       <div id="loginForm" class="space-y-4">
-        <input type="text" id="loginMobile" placeholder="Mobile Number" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-blue-500">
-        <input type="password" id="loginPass" placeholder="Password" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-blue-500">
+        <div>
+          <label class="block text-xs font-bold text-slate-400 mb-1">Mobile Number</label>
+          <input type="text" id="loginMobile" placeholder="Enter Mobile" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-blue-500">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-400 mb-1">Password</label>
+          <input type="password" id="loginPass" placeholder="Enter Password" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-blue-500">
+        </div>
         <button onclick="handleLogin()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl text-sm transition shadow-lg shadow-blue-600/30">Sign In</button>
       </div>
 
+      <!-- Register Form -->
       <div id="registerForm" class="space-y-3 hidden">
-        <input type="text" id="regName" placeholder="Full Name" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500">
-        <input type="text" id="regMobile" placeholder="Mobile Number" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500">
-        <input type="password" id="regPass" placeholder="Password" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500">
+        <div>
+          <label class="block text-xs font-bold text-slate-400 mb-1">Full Name</label>
+          <input type="text" id="regName" placeholder="Dr. Name or Patient Name" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-400 mb-1">Mobile Number</label>
+          <input type="text" id="regMobile" placeholder="Mobile Number" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-400 mb-1">Password</label>
+          <input type="password" id="regPass" placeholder="Password" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500">
+        </div>
         
         <div>
           <label class="block text-xs font-bold text-slate-400 mb-1">Select Role:</label>
           <select id="regRole" onchange="toggleFields()" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none">
-            <option value="DOCTOR">Doctor</option>
+            <option value="DOCTOR">Doctor / Clinic Owner</option>
             <option value="PATIENT">Patient</option>
           </select>
         </div>
 
+        <!-- Doctor Extra Fields -->
         <div id="doctorFields" class="space-y-3">
-          <input type="text" id="clinicName" placeholder="Clinic Name" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500">
+          <input type="text" id="clinicName" placeholder="Clinic / Hospital Name" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500">
           <input type="text" id="location" placeholder="City / Location" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500">
         </div>
 
-        <button onclick="handleRegister()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-sm transition shadow-lg shadow-emerald-600/30">Register Account</button>
+        <button onclick="handleRegister()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-sm transition shadow-lg shadow-emerald-600/30">Register Clinic Free</button>
       </div>
     </div>
   </div>
