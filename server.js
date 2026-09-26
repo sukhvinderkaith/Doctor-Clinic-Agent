@@ -2,16 +2,13 @@ const express = require('express');
 const app = express();
 const path = require('path');
 
+// Express JSON and Static Middleware
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Explicit Home Route Fix
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// In-Memory Database
+// In-Memory Database Simulation
 let users = [];
+let appointments = [];
 
 // Default Owner Account (Admin Login: Mobile: 0000000000, Pass: admin)
 users.push({
@@ -23,7 +20,12 @@ users.push({
   status: 'ACTIVE'
 });
 
-// REGISTER ROUTE
+// Explicit Root Route -> Index.html Direct Serve
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// REGISTER ROUTE (Mobile Number, Location & Clinic Name)
 app.post('/api/register', (req, res) => {
   const { name, mobile, password, role, clinicName, location } = req.body;
 
@@ -37,14 +39,14 @@ app.post('/api/register', (req, res) => {
   }
 
   const trialEndDate = new Date();
-  trialEndDate.setDate(trialEndDate.getDate() + 7);
+  trialEndDate.setDate(trialEndDate.getDate() + 7); // 7 Days Free Trial
 
   const newUser = {
     id: 'usr_' + Date.now(),
     name,
     mobile,
     password,
-    role,
+    role, // 'DOCTOR' ya 'PATIENT'
     clinicName: clinicName || '',
     location: location || '',
     status: role === 'DOCTOR' ? 'TRIAL' : 'ACTIVE',
@@ -65,6 +67,7 @@ app.post('/api/login', (req, res) => {
     return res.status(401).json({ message: 'Invalid Mobile Number or Password' });
   }
 
+  // Check Subscription Status for Doctor
   if (user.role === 'DOCTOR') {
     const now = new Date();
     if (user.status === 'BLOCKED' || user.status === 'EXPIRED') {
@@ -72,18 +75,19 @@ app.post('/api/login', (req, res) => {
     }
     if (user.status === 'TRIAL' && now > new Date(user.trialEnd)) {
       user.status = 'EXPIRED';
-      return res.status(403).json({ message: 'Aapka Free Trial khatam ho chuka hai.' });
+      return res.status(403).json({ message: 'Aapka Free Trial khatam ho chuka hai. Payment karein.' });
     }
   }
 
   res.json({ message: 'Login Success', user });
 });
 
-// ADMIN APIs
+// ADMIN API: Get All Users
 app.get('/api/admin/users', (req, res) => {
   res.json(users);
 });
 
+// ADMIN API: Update Status / Extend Trial
 app.post('/api/admin/update-status', (req, res) => {
   const { userId, status, days } = req.body;
   const user = users.find(u => u.id === userId);
@@ -101,12 +105,11 @@ app.post('/api/admin/update-status', (req, res) => {
   res.status(404).json({ message: 'User not found' });
 });
 
-const PORT = process.env.PORT || 3000;
-// Catch-all route to serve index.html for any unmatched path
+// Catch-all Wildcard Route (Fixes 404 / Cannot GET errors)
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Start Server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
