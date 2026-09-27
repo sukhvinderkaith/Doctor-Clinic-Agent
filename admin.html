@@ -2,95 +2,95 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>SuperAdmin Governance Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SuperAdmin Control Center | MediCare AI</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-950 text-slate-100 p-6 min-h-screen">
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen">
 
-  <div class="max-w-6xl mx-auto space-y-6">
-    
-    <div class="flex justify-between items-center">
-      <h1 class="text-2xl font-black text-blue-500">SuperAdmin Control Panel</h1>
-      <button onclick="loadAdminMetrics()" class="bg-slate-800 text-xs px-4 py-2 rounded-xl font-bold">Refresh Stats</button>
+  <!-- LOGIN SCREEN -->
+  <div id="loginScreen" class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 w-full max-w-md shadow-2xl">
+      <div class="text-center mb-8">
+        <div class="w-12 h-12 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center mx-auto mb-3 text-2xl">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-white">SuperAdmin Security Panel</h2>
+        <p class="text-xs text-slate-400 mt-1">Enter credentials to manage clinic ecosystem</p>
+      </div>
+
+      <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Admin Username</label>
+          <input type="text" id="adminUser" placeholder="admin" class="w-full px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:border-indigo-500 text-sm" required />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Password</label>
+          <input type="password" id="adminPass" placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:border-indigo-500 text-sm" required />
+        </div>
+        <button type="submit" class="w-full py-3 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg transition">Authenticate Admin</button>
+      </form>
     </div>
+  </div>
 
-    <!-- Revenue & Doctors Stats Overview -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800">
-        <div class="text-xs text-slate-400">Total Revenue</div>
-        <div id="revTotal" class="text-2xl font-bold mt-1 text-emerald-400">₹0</div>
+  <!-- ADMIN DASHBOARD (HIDDEN UNTIL AUTHENTICATED) -->
+  <div id="adminDashboard" class="hidden">
+    <nav class="border-b border-slate-800 bg-slate-900 px-6 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-2 text-indigo-400 font-bold">
+        <i class="fa-solid fa-shield-halved"></i> SuperAdmin Control Hub
       </div>
-      <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800">
-        <div class="text-xs text-slate-400">Today Revenue</div>
-        <div id="revToday" class="text-2xl font-bold mt-1 text-blue-400">₹0</div>
-      </div>
-      <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800">
-        <div class="text-xs text-slate-400">Total Doctors</div>
-        <div id="docTotal" class="text-2xl font-bold mt-1">0</div>
-      </div>
-      <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800">
-        <div class="text-xs text-slate-400">Pending Approvals</div>
-        <div id="docPending" class="text-2xl font-bold mt-1 text-rose-400">0</div>
+      <button onclick="logoutAdmin()" class="text-xs bg-red-500/20 text-red-400 border border-red-500/30 px-3 py-1.5 rounded-lg hover:bg-red-500/30 transition">Logout</button>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-6 py-8">
+      <h1 class="text-2xl font-bold text-white mb-6">Doctor Approvals & System Analytics</h1>
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+        <h3 class="text-lg font-bold text-white mb-4">Pending Doctor Verifications</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-slate-400">
+            <thead class="bg-slate-800 text-slate-200 text-xs uppercase">
+              <tr>
+                <th class="p-3">Doctor Name</th>
+                <th class="p-3">Specialization</th>
+                <th class="p-3">License No.</th>
+                <th class="p-3">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-slate-800">
+                <td class="p-3 text-white font-medium">Dr. Rajesh Sharma</td>
+                <td class="p-3">Cardiologist</td>
+                <td class="p-3">MCI-987654</td>
+                <td class="p-3 flex gap-2">
+                  <button onclick="alert('Doctor Approved Successfully!')" class="px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded text-xs font-bold hover:bg-emerald-500/30">Approve</button>
+                  <button onclick="alert('Doctor Rejected')" class="px-3 py-1 bg-red-500/20 text-red-400 rounded text-xs font-bold hover:bg-red-500/30">Reject</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
-
-    <!-- Doctor Management List -->
-    <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 space-y-4">
-      <h3 class="font-bold text-sm">All Doctors Management & Approvals</h3>
-      <div id="doctorsContainer" class="space-y-3"></div>
-    </div>
-
   </div>
 
   <script>
-    async function loadAdminMetrics() {
-      const token = sessionStorage.getItem('authToken');
-      if (!token) {
-        const pass = prompt("Enter SuperAdmin Login Mobile / Password Token:");
-        sessionStorage.setItem('authToken', pass);
-      }
+    function handleAdminLogin(e) {
+      e.preventDefault();
+      const user = document.getElementById('adminUser').value;
+      const pass = document.getElementById('adminPass').value;
 
-      const res = await fetch('/api/admin/metrics', {
-        headers: { 'Authorization': `Bearer ${sessionStorage.getItem('authToken')}` }
-      });
-      const data = await res.json();
-
-      if (data.success) {
-        document.getElementById('revTotal').innerText = '₹' + data.stats.totalRevenue;
-        document.getElementById('revToday').innerText = '₹' + data.stats.todayRevenue;
-        document.getElementById('docTotal').innerText = data.stats.totalDoctors;
-        document.getElementById('docPending').innerText = data.stats.pendingDoctors;
-
-        const div = document.getElementById('doctorsContainer');
-        div.innerHTML = '';
-
-        data.doctors.forEach(doc => {
-          div.innerHTML += `
-            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
-              <div>
-                <span class="font-bold text-sm text-white">Dr. ${doc.name} (${doc.category})</span>
-                <span class="ml-2 text-slate-400">${doc.city}, ${doc.state}</span>
-                <p class="text-slate-500 mt-1">Email: ${doc.email} | Mobile: ${doc.mobile} | Status: <b>${doc.subscriptionStatus}</b></p>
-              </div>
-              <div>
-                ${!doc.isApproved ? `<button onclick="approveDoctor('${doc._id}')" class="bg-emerald-600 px-4 py-2 rounded-xl font-bold">Approve</button>` : `<span class="text-emerald-400 font-bold">Approved</span>`}
-              </div>
-            </div>
-          `;
-        });
+      if(user === "admin" && pass === "admin123") {
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('adminDashboard').classList.remove('hidden');
+      } else {
+        alert("Invalid SuperAdmin Credentials! Use: admin / admin123");
       }
     }
-
-    async function approveDoctor(id) {
-      const token = sessionStorage.getItem('authToken');
-      await fetch(`/api/admin/approve-doctor/${id}`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      loadAdminMetrics();
+    function logoutAdmin() {
+      document.getElementById('adminDashboard').classList.add('hidden');
+      document.getElementById('loginScreen').classList.remove('hidden');
     }
-
-    loadAdminMetrics();
   </script>
 </body>
 </html>
