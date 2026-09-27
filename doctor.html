@@ -1,1 +1,188 @@
-  
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Doctor Portal - ClinicCare AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 p-6 min-h-screen">
+
+  <div class="max-w-6xl mx-auto space-y-6">
+    
+    <!-- Doctor Auth Panel (Hidden if Logged In) -->
+    <div id="authSection" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      
+      <!-- Doctor Login -->
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
+        <h2 class="text-lg font-bold">Doctor Login</h2>
+        <input type="text" id="loginMobile" placeholder="Mobile Number" class="w-full bg-slate-950 p-3 rounded-xl text-xs border border-slate-800">
+        <input type="password" id="loginPassword" placeholder="Password" class="w-full bg-slate-950 p-3 rounded-xl text-xs border border-slate-800">
+        <button onclick="loginDoctor()" class="w-full bg-blue-600 font-bold text-xs py-3 rounded-xl">Login</button>
+      </div>
+
+      <!-- Doctor Registration -->
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-3">
+        <h2 class="text-lg font-bold">Doctor Registration</h2>
+        <div class="grid grid-cols-2 gap-2">
+          <input type="text" id="regName" placeholder="Full Name" class="bg-slate-950 p-2.5 rounded-xl text-xs border border-slate-800">
+          <input type="email" id="regEmail" placeholder="Gmail ID" class="bg-slate-950 p-2.5 rounded-xl text-xs border border-slate-800">
+          <input type="text" id="regMobile" placeholder="Mobile Number" class="bg-slate-950 p-2.5 rounded-xl text-xs border border-slate-800">
+          <input type="password" id="regPassword" placeholder="Password" class="bg-slate-950 p-2.5 rounded-xl text-xs border border-slate-800">
+        </div>
+        <select id="regCategory" class="w-full bg-slate-950 p-2.5 rounded-xl text-xs border border-slate-800">
+          <option value="General Physician">General Physician</option>
+          <option value="Dentist">Dentist</option>
+          <option value="Cardiologist">Cardiologist</option>
+          <option value="Orthopedic">Orthopedic</option>
+          <option value="Pediatrician">Pediatrician</option>
+        </select>
+        <div class="grid grid-cols-2 gap-2">
+          <input type="text" id="regState" placeholder="State (e.g. Maharashtra)" class="bg-slate-950 p-2.5 rounded-xl text-xs border border-slate-800">
+          <input type="text" id="regCity" placeholder="City (e.g. Mumbai)" class="bg-slate-950 p-2.5 rounded-xl text-xs border border-slate-800">
+        </div>
+        <input type="text" id="regClinic" placeholder="Clinic Name" class="w-full bg-slate-950 p-2.5 rounded-xl text-xs border border-slate-800">
+        <input type="text" id="regAddress" placeholder="Full Address" class="w-full bg-slate-950 p-2.5 rounded-xl text-xs border border-slate-800">
+        <button onclick="registerDoctor()" class="w-full bg-emerald-600 font-bold text-xs py-3 rounded-xl">Submit Registration</button>
+      </div>
+
+    </div>
+
+    <!-- Live Queue Console (Shown when Logged In) -->
+    <div id="dashboardSection" class="hidden space-y-6">
+      <div class="flex justify-between items-center bg-slate-900 p-4 rounded-2xl border border-slate-800">
+        <div>
+          <h1 id="docWelcome" class="font-bold text-lg">Doctor Dashboard</h1>
+          <p id="docSubStatus" class="text-xs text-slate-400 mt-0.5"></p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="buySubscription()" class="bg-emerald-600 text-xs px-4 py-2 rounded-xl font-bold">Renew / Plan Upgrade (Cashfree)</button>
+          <button onclick="logout()" class="bg-slate-800 text-xs px-4 py-2 rounded-xl font-bold">Logout</button>
+        </div>
+      </div>
+
+      <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 space-y-4">
+        <h3 class="font-bold text-sm">Live Waiting Queue & AI Symptom Priority</h3>
+        <div id="queueContainer" class="space-y-3"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const cashfree = Cashfree({ mode: "sandbox" });
+
+    async function loginDoctor() {
+      const mobile = document.getElementById('loginMobile').value;
+      const password = document.getElementById('loginPassword').value;
+
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mobile, password, deviceInfo: navigator.userAgent })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        sessionStorage.setItem('authToken', data.token);
+        loadDashboard();
+      } else {
+        alert(data.message);
+      }
+    }
+
+    async function registerDoctor() {
+      const body = {
+        name: document.getElementById('regName').value,
+        email: document.getElementById('regEmail').value,
+        mobile: document.getElementById('regMobile').value,
+        password: document.getElementById('regPassword').value,
+        category: document.getElementById('regCategory').value,
+        state: document.getElementById('regState').value,
+        city: document.getElementById('regCity').value,
+        clinicName: document.getElementById('regClinic').value,
+        clinicAddress: document.getElementById('regAddress').value
+      };
+
+      const res = await fetch('/api/auth/register-doctor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      const data = await res.json();
+      alert(data.message);
+    }
+
+    async function loadDashboard() {
+      const token = sessionStorage.getItem('authToken');
+      if (!token) return;
+
+      const res = await fetch('/api/doctor/queue', { headers: { 'Authorization': `Bearer ${token}` } });
+      const data = await res.json();
+
+      if (data.success) {
+        document.getElementById('authSection').classList.add('hidden');
+        document.getElementById('dashboardSection').classList.remove('hidden');
+
+        document.getElementById('docWelcome').innerText = `Dr. ${data.doctor.name} (${data.doctor.category})`;
+        document.getElementById('docSubStatus').innerText = `Subscription Status: ${data.doctor.subscriptionStatus}`;
+
+        const div = document.getElementById('queueContainer');
+        div.innerHTML = '';
+
+        data.queue.forEach(item => {
+          let badgeColor = item.aiTriageLevel === 'CRITICAL' ? 'bg-rose-600' : (item.aiTriageLevel === 'MODERATE' ? 'bg-amber-600' : 'bg-slate-700');
+
+          div.innerHTML += `
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex justify-between items-center">
+              <div>
+                <span class="bg-blue-600 font-bold text-xs px-2.5 py-1 rounded-lg">Token #${item.tokenNumber}</span>
+                <span class="font-bold text-sm text-white ml-2">${item.patientName} (${item.patientPhone})</span>
+                <span class="${badgeColor} text-[10px] font-bold px-2 py-0.5 rounded ml-2">${item.aiTriageLevel}</span>
+                <p class="text-xs text-slate-400 mt-2">Symptoms: ${item.symptoms}</p>
+                <p class="text-[11px] text-slate-500">AI Note: ${item.aiSummary}</p>
+              </div>
+              <div class="flex gap-2">
+                <button onclick="updateStatus('${item._id}', 'IN_CABIN')" class="bg-emerald-600 text-xs px-3 py-1.5 rounded-lg">In Cabin</button>
+                <button onclick="updateStatus('${item._id}', 'COMPLETED')" class="bg-slate-800 text-xs px-3 py-1.5 rounded-lg">Complete</button>
+              </div>
+            </div>
+          `;
+        });
+      }
+    }
+
+    async function updateStatus(id, status) {
+      const token = sessionStorage.getItem('authToken');
+      await fetch(`/api/doctor/queue-status/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ status })
+      });
+      loadDashboard();
+    }
+
+    async function buySubscription() {
+      const token = sessionStorage.getItem('authToken');
+      const res = await fetch('/api/subscription/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ planType: 'MONTHLY', amount: 999 })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        cashfree.checkout({ paymentSessionId: data.payment_session_id, redirectTarget: "_modal" });
+      }
+    }
+
+    function logout() {
+      sessionStorage.clear();
+      location.reload();
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>  
